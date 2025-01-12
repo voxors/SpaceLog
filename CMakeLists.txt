@@ -11,7 +11,7 @@ find_package(SDL3_image REQUIRED)
 add_executable(SpaceLog source/main.cpp
     source/gameobject.cpp source/gameobject.h
     source/mapgenerator.h source/mapgenerator.cpp
-    source/assetloader.h source/assetloader.cpp
+    source/assetmanager.h source/assetmanager.cpp
 )
 
 target_link_libraries(SpaceLog PRIVATE SDL3::SDL3 SDL3_image)

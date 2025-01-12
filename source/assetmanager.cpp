@@ -1,8 +1,20 @@
-#include "assetloader.h"
+#include "assetmanager.h"
 #include <SDL3_image/SDL_image.h>
 #include <string>
 
-Assetloader::Assetloader(SDL_Renderer* renderer)
+AssetManager::AssetManager()
+{
+}
+
+AssetManager::~AssetManager()
+{
+    for (int i = 0; i < textureEnum::total; i++)
+    {
+        SDL_DestroyTexture(textures[i]);
+    }
+}
+
+bool AssetManager::loadRessourcesTextures(SDL_Renderer *renderer)
 {
     const std::string ressourcePath = "./ressource/";
     const std::string starPath = "Star.png";
@@ -21,4 +33,6 @@ Assetloader::Assetloader(SDL_Renderer* renderer)
     image = IMG_Load((ressourcePath + ocean1Path).c_str());
     textures[textureEnum::ocean1] = SDL_CreateTextureFromSurface(renderer, image);
     SDL_DestroySurface(image);
+
+    return true;
 }

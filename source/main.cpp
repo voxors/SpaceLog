@@ -9,14 +9,20 @@
 
 #include "gameobject.h"
 #include "mapgenerator.h"
-#include "assetloader.h"
+#include "assetmanager.h"
 
 static SDL_Window* window = nullptr;
 static SDL_Renderer* renderer = nullptr;
-static Assetloader* assetloader = nullptr;
+static AssetManager* assetManager = nullptr;
 constexpr int CameraSpeed = 10;
+constexpr Uint32 wordWidth = 10000;
+constexpr Uint32 wordHeight = 10000;
+constexpr Uint32 virtualWidth = 960;
+constexpr Uint32 virtualHeight = 540;
+constexpr Uint32 backgroundParalax = 4;
+constexpr Uint32 starParalax = 3;
 
-SDL_Point cameraPosition = { 9500, 9500 };
+SDL_Point cameraPosition = { 2500, 2500 };
 
 std::vector<GameObject*> starList;
 
@@ -24,14 +30,19 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     SDL_RenderClear(renderer);
 
+    SDL_Texture* backgroundTexture = assetManager->getTexture(textureEnum::background);
+    SDL_SetTextureColorMod(backgroundTexture, 0, 0, 255);
+    SDL_FRect backgroundRect = { (float)cameraPosition.x / backgroundParalax, (float)cameraPosition.y / backgroundParalax, virtualWidth, virtualHeight };
+    SDL_RenderTexture(renderer, backgroundTexture, &backgroundRect , nullptr);
+
     for (auto star : starList)
     {
-        star->render(renderer, cameraPosition.x / 5, cameraPosition.y / 5);
+        star->render(renderer, cameraPosition.x / starParalax, cameraPosition.y / starParalax);
     }
 
-    GameObject* planettest = new GameObject(assetloader->getTexture(textureEnum::ocean1));
-    planettest->setPosX(9700);
-    planettest->setPosY(9700);
+    GameObject* planettest = new GameObject(assetManager->getTexture(textureEnum::ocean1));
+    planettest->setPosX(2600);
+    planettest->setPosY(2600);
     planettest->render(renderer, cameraPosition.x, cameraPosition.y);
 
     SDL_RenderPresent(renderer);
@@ -83,34 +94,39 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("SpaceLog", 960, 540, SDL_WINDOW_RESIZABLE, &window, &renderer))
+    if (!SDL_CreateWindowAndRenderer("SpaceLog", virtualWidth, virtualHeight, SDL_WINDOW_RESIZABLE, &window, &renderer))
     {
         SDL_Log("SDL_CreateWindowAndRenderer() failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_SetRenderLogicalPresentation(renderer, 960, 540, SDL_LOGICAL_PRESENTATION_LETTERBOX))
+    if (!SDL_SetRenderLogicalPresentation(renderer, virtualWidth, virtualHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX))
     {
         SDL_Log("SDL_SetRenderLogicalPresentation() failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    assetloader = new Assetloader(renderer);
+    assetManager = new AssetManager();
+    assetManager->loadRessourcesTextures(renderer);
 
-    std::vector<SDL_Point> starPoints = mapGen::genStar(1337, 200, 200, 20000, 20000);
+    std::vector<SDL_Point> starPoints = mapGen::genStar(1337, 200 / starParalax, 200 / starParalax, wordWidth / starParalax, wordHeight / starParalax);
     for (SDL_Point point : starPoints)
     {
-        GameObject* star = new GameObject(assetloader->getTexture(textureEnum::star));
+        GameObject* star = new GameObject(assetManager->getTexture(textureEnum::star));
         star->setPosX(point.x);
         star->setPosY(point.y);
         starList.push_back(star);
     }
+
+    SDL_Texture* background = mapGen::genBackground(1337, renderer, wordWidth / backgroundParalax, wordHeight / backgroundParalax);
+    assetManager->setBackgroundTexture(background);
 
     return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
+    delete assetManager;
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
