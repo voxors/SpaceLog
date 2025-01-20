@@ -15,24 +15,35 @@ static SDL_Window* window = nullptr;
 static SDL_Renderer* renderer = nullptr;
 static AssetManager* assetManager = nullptr;
 constexpr int CameraSpeed = 10;
-constexpr Uint32 wordWidth = 10000;
-constexpr Uint32 wordHeight = 10000;
+constexpr Uint32 worldWidth = 10000;
+constexpr Uint32 worldHeight = 10000;
 constexpr Uint32 virtualWidth = 960;
 constexpr Uint32 virtualHeight = 540;
+constexpr SDL_Point maxCameraPos = {worldWidth - virtualWidth, worldHeight - virtualHeight};
 constexpr Uint32 backgroundParalax = 4;
 constexpr Uint32 starParalax = 3;
 
-SDL_Point cameraPosition = { 2500, 2500 };
+SDL_Point cameraPosition = { 5000 - virtualWidth / 2, 5000 - virtualHeight / 2 };
 
 std::vector<GameObject*> starList;
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+    //Verify New Camera position to keep it in bound
+    if (cameraPosition.x < 0)
+        cameraPosition.x = 0;
+    if (cameraPosition.x > maxCameraPos.x)
+        cameraPosition.x = maxCameraPos.x;
+    if (cameraPosition.y < 0)
+        cameraPosition.y = 0;
+    if (cameraPosition.y > maxCameraPos.y)
+        cameraPosition.y = maxCameraPos.y;
+
     SDL_RenderClear(renderer);
 
     SDL_Texture* backgroundTexture = assetManager->getTexture(textureEnum::background);
     SDL_SetTextureColorMod(backgroundTexture, 0, 0, 255);
-    SDL_FRect backgroundRect = { (float)cameraPosition.x / backgroundParalax, (float)cameraPosition.y / backgroundParalax, virtualWidth, virtualHeight };
+    SDL_FRect backgroundRect = { (float)cameraPosition.x / backgroundParalax, (float)cameraPosition.y / backgroundParalax, virtualWidth , virtualHeight };
     SDL_RenderTexture(renderer, backgroundTexture, &backgroundRect , nullptr);
 
     for (auto star : starList)
@@ -41,8 +52,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     }
 
     GameObject* planettest = new GameObject(assetManager->getTexture(textureEnum::ocean1));
-    planettest->setPosX(2600);
-    planettest->setPosY(2600);
+    planettest->setPosX(5000);
+    planettest->setPosY(5000);
     planettest->render(renderer, cameraPosition.x, cameraPosition.y);
 
     SDL_RenderPresent(renderer);
@@ -106,10 +117,12 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
+    SDL_SetRenderVSync(renderer, false);
+
     assetManager = new AssetManager();
     assetManager->loadRessourcesTextures(renderer);
 
-    std::vector<SDL_Point> starPoints = mapGen::genStar(1337, 200 / starParalax, 200 / starParalax, wordWidth / starParalax, wordHeight / starParalax);
+    std::vector<SDL_Point> starPoints = mapGen::genStar(1337, 500 / starParalax, 500 / starParalax, worldWidth / (starParalax / 2 ), worldHeight / (starParalax / 2 ));
     for (SDL_Point point : starPoints)
     {
         GameObject* star = new GameObject(assetManager->getTexture(textureEnum::star));
@@ -118,7 +131,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         starList.push_back(star);
     }
 
-    SDL_Texture* background = mapGen::genBackground(1337, renderer, wordWidth / backgroundParalax, wordHeight / backgroundParalax);
+    SDL_Texture* background = mapGen::genBackground(1337, renderer, worldWidth / (backgroundParalax / 2), worldHeight / (backgroundParalax / 2));
     assetManager->setBackgroundTexture(background);
 
     return SDL_APP_CONTINUE;

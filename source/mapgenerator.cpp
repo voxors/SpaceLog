@@ -1,5 +1,7 @@
 #include "mapgenerator.h"
 
+#include <SDL3/SDL_log.h>
+
 #include <cmath>
 #include <random>
 #include "FastNoiseLite/FastNoiseLite.h"
@@ -36,6 +38,17 @@ std::vector<SDL_Point> mapGen::genStar(int seed, int genWidth, int genHeight, in
     return starVector;
 }
 
+constexpr Uint32 grayscaleValue[] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
+    10, 10, 10, 10, 10, 10, 10, 10,
+    20, 20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 20, 20, 90, 90, 110,
+    110, 110, 120, 120, 120, 120, 120, 120,
+    120, 120, 120, 120, 120, 120, 120, 120,
+};
+
 SDL_Texture* mapGen::genBackground(int seed, SDL_Renderer* renderer, int mapWidth, int mapHeight)
 {
     FastNoiseLite noiseGen(seed);
@@ -44,22 +57,22 @@ SDL_Texture* mapGen::genBackground(int seed, SDL_Renderer* renderer, int mapWidt
 
     SDL_Surface* surface = SDL_CreateSurface(mapWidth, mapHeight, SDL_PIXELFORMAT_RGBA8888);
     Uint32* surfacePixel = reinterpret_cast<Uint32*>(surface->pixels);
+
     for (int y = 0; y < mapHeight; y++)
     {
         for (int x = 0; x < mapWidth; x++)
         {
             float noise = noiseGen.GetNoise((float)x,(float)y);
             noise += 1;
-            noise *= 128;
-            Uint32 noiseInt = noise;
-            //We want to loose precision to create a pixelated effect with 8 hue
-            noiseInt = (noiseInt / (255 / 8)) * (255 / 8);
+            noise *= 32;
+            Uint32 noiseInt = std::lround(noise);
 
-            *surfacePixel = noiseInt << 24 | noiseInt << 16 | noiseInt << 8 | 255;
+            *surfacePixel = grayscaleValue[noiseInt] << 24 | grayscaleValue[noiseInt] << 16 | grayscaleValue[noiseInt] << 8 | 255;
 
             surfacePixel++;
         }
     }
+
     SDL_Texture* background = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);
 
