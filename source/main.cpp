@@ -51,7 +51,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         star->render(renderer, cameraPosition.x / starParalax, cameraPosition.y / starParalax);
     }
 
-    GameObject* planettest = new GameObject(assetManager->getTexture(textureEnum::ocean1));
+    GameObject* planettest = new GameObject(assetManager->getTexture(textureEnum::terran1));
     planettest->setPosX(5000);
     planettest->setPosY(5000);
     planettest->render(renderer, cameraPosition.x, cameraPosition.y);
