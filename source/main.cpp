@@ -8,6 +8,7 @@
 #include <SDL3/SDL_keycode.h>
 
 #include "gameobject.h"
+#include "planet.h"
 #include "mapgenerator.h"
 #include "assetmanager.h"
 
@@ -46,14 +47,17 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_FRect backgroundRect = { (float)cameraPosition.x / backgroundParalax, (float)cameraPosition.y / backgroundParalax, virtualWidth , virtualHeight };
     SDL_RenderTexture(renderer, backgroundTexture, &backgroundRect , nullptr);
 
-    for (auto star : starList)
+    for (GameObject *star : starList)
     {
-        star->render(renderer, cameraPosition.x / starParalax, cameraPosition.y / starParalax);
+        star->render(renderer, cameraPosition.x / starParalax,
+                     cameraPosition.y / starParalax);
     }
 
-    GameObject* planettest = new GameObject(assetManager->getTexture(textureEnum::terran1));
+    Planet* planettest = new Planet(assetManager->getTexture(textureEnum::terran1)
+                                    , assetManager->getTexture(textureEnum::planetShadow));
     planettest->setPosX(5000);
     planettest->setPosY(5000);
+    planettest->setShadowPosition(0);
     planettest->render(renderer, cameraPosition.x, cameraPosition.y);
 
     SDL_RenderPresent(renderer);

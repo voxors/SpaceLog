@@ -1,6 +1,5 @@
 #include "gameobject.h"
 #include <SDL3_image/SDL_image.h>
-#include <cmath>
 
 int GameObject::getPosY() const
 {

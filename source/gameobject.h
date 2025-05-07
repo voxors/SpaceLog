@@ -6,11 +6,10 @@
 
 class GameObject
 {
-
+protected:
     int posX = 0;
     int posY = 0;
     SDL_Texture* texture = nullptr;
-
 public:
     GameObject(SDL_Texture *texture);
 

@@ -20,6 +20,7 @@ bool AssetManager::loadRessourcesTextures(SDL_Renderer *renderer)
     const std::string starPath = "Star.png";
     const std::string terran1Path = "Terran-1.png";
     const std::string ocean1Path = "Ocean-1.png";
+    const std::string planetShadowPath = "Planet-Shadow.png";
 
     //Star
     SDL_Surface* image = IMG_Load((ressourcePath + starPath).c_str());
@@ -32,6 +33,10 @@ bool AssetManager::loadRessourcesTextures(SDL_Renderer *renderer)
     //Ocean1
     image = IMG_Load((ressourcePath + ocean1Path).c_str());
     textures[textureEnum::ocean1] = SDL_CreateTextureFromSurface(renderer, image);
+    SDL_DestroySurface(image);
+    //planetShadow
+    image = IMG_Load((ressourcePath + planetShadowPath).c_str());
+    textures[textureEnum::planetShadow] = SDL_CreateTextureFromSurface(renderer, image);
     SDL_DestroySurface(image);
 
     return true;

@@ -12,6 +12,8 @@ add_executable(SpaceLog source/main.cpp
     source/gameobject.cpp source/gameobject.h
     source/mapgenerator.h source/mapgenerator.cpp
     source/assetmanager.h source/assetmanager.cpp
+    source/planet.cpp
+    source/planet.h
 )
 
 target_link_libraries(SpaceLog PRIVATE SDL3::SDL3 SDL3_image)
