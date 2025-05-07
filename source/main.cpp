@@ -57,7 +57,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
                                     , assetManager->getTexture(textureEnum::planetShadow));
     planettest->setPosX(5000);
     planettest->setPosY(5000);
-    planettest->setShadowPosition(0);
+    planettest->setShadowPosition(2);
     planettest->render(renderer, cameraPosition.x, cameraPosition.y);
 
     SDL_RenderPresent(renderer);
@@ -121,7 +121,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
-    SDL_SetRenderVSync(renderer, false);
+    SDL_SetRenderVSync(renderer, true);
 
     assetManager = new AssetManager();
     assetManager->loadRessourcesTextures(renderer);
