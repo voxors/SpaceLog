@@ -8,41 +8,33 @@ AssetManager::AssetManager()
 
 AssetManager::~AssetManager()
 {
-    for (int i = 0; i < textureEnum::total; i++)
+    for (int i = 0; i < TextureEnum::total; i++)
     {
         SDL_DestroyTexture(textures[i]);
     }
 }
 
+void AssetManager::loadTextureIntoArray(SDL_Renderer *renderer, const std::string imagePath, TextureEnum textureEnum)
+{
+    SDL_Surface* image = IMG_Load(imagePath.c_str());
+    textures[textureEnum] = SDL_CreateTextureFromSurface(renderer, image);
+    SDL_DestroySurface(image);
+}
+
 bool AssetManager::loadRessourcesTextures(SDL_Renderer *renderer)
 {
     const std::string ressourcePath = "./ressource/";
-    const std::string starPath = "Star.png";
-    const std::string terran1Path = "Terran-1.png";
-    const std::string ocean1Path = "Ocean-1.png";
-    const std::string planetShadowPath = "Planet-Shadow.png";
-    const std::string sunPath = "Sun.png";
+    const std::string starPath = ressourcePath + "Star.png";
+    const std::string terran1Path = ressourcePath + "Terran-1.png";
+    const std::string ocean1Path = ressourcePath + "Ocean-1.png";
+    const std::string planetShadowPath = ressourcePath + "Planet-Shadow.png";
+    const std::string sunPath = ressourcePath + "Sun.png";
 
-    //Star
-    SDL_Surface* image = IMG_Load((ressourcePath + starPath).c_str());
-    textures[textureEnum::star] = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_DestroySurface(image);
-    //terran1
-    image = IMG_Load((ressourcePath + terran1Path).c_str());
-    textures[textureEnum::terran1] = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_DestroySurface(image);
-    //Ocean1
-    image = IMG_Load((ressourcePath + ocean1Path).c_str());
-    textures[textureEnum::ocean1] = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_DestroySurface(image);
-    //planetShadow
-    image = IMG_Load((ressourcePath + planetShadowPath).c_str());
-    textures[textureEnum::planetShadow] = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_DestroySurface(image);
-    //Sun
-    image = IMG_Load((ressourcePath + sunPath).c_str());
-    textures[textureEnum::sun] = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_DestroySurface(image);
+    loadTextureIntoArray(renderer, starPath, TextureEnum::star);
+    loadTextureIntoArray(renderer, terran1Path, TextureEnum::terran1);
+    loadTextureIntoArray(renderer, ocean1Path, TextureEnum::ocean1);
+    loadTextureIntoArray(renderer, planetShadowPath, TextureEnum::planetShadow);
+    loadTextureIntoArray(renderer, sunPath, TextureEnum::sun);
 
     return true;
 }

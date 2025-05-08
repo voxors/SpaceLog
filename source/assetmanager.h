@@ -1,9 +1,10 @@
 #ifndef ASSETMANAGER_H
 #define ASSETMANAGER_H
 
+#include <string>
 #include <SDL3/SDL_render.h>
 
-enum textureEnum
+enum TextureEnum
 {
     background,
     star,
@@ -16,13 +17,15 @@ enum textureEnum
 
 class AssetManager
 {
-    SDL_Texture* textures[textureEnum::total] = { nullptr };
+private:
+    SDL_Texture* textures[TextureEnum::total] = { nullptr };
+    void loadTextureIntoArray(SDL_Renderer *renderer, const std::string imagePath, TextureEnum textureEnum);
 public:
     AssetManager();
     ~AssetManager();
     bool loadRessourcesTextures(SDL_Renderer* renderer);
-    SDL_Texture* getTexture(textureEnum texture) { return textures[texture]; }
-    void setBackgroundTexture(SDL_Texture* background) { textures[textureEnum::background] = background; }
+    SDL_Texture* getTexture(TextureEnum texture) { return textures[texture]; }
+    void setBackgroundTexture(SDL_Texture* background) { textures[TextureEnum::background] = background; }
 };
 
 #endif // ASSETMANAGER_H
