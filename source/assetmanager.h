@@ -10,6 +10,7 @@ enum textureEnum
     terran1,
     ocean1,
     planetShadow,
+    sun,
     total
 };
 
